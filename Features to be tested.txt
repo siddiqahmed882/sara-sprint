@@ -1,0 +1,18 @@
+Features to be tested (tested via unit testing, integration testing, and system testing):
+1-My labs  
+2-My donations 
+3-upload in chat box
+4-AI chat box
+5-regular chat box 
+6-edit donations
+7-delete donations
+8-automatic match suggestion in notifications
+9-feedback form 
+10-matches tab for doctors and patients (including all the subsequent pages that follow)
+11-patients tab (including all the subsequent pages that follow)
+12-clinical trials tab (including all the subsequent pages that follow such as: "Are you sure you want to match to ... trial?")
+13-Labs tab (including all the subsequent pages that follow)
+14-donations tab (including all the subsequent pages that follow)
+15-edit profile tab (including all the subsequent pages that follow)
+16-filter system
+17-new donation form (including all the subsequent pages that follow)
