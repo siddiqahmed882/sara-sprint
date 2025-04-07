@@ -1,6 +1,7 @@
 import ejs from 'ejs';
 import nodemailer from 'nodemailer';
 import { getEmailTemplatePath } from '../lib/utils.js';
+
 export class EmailService {
   /** @type {EmailService} */
   static instance;

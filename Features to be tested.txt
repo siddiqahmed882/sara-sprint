@@ -1,11 +1,11 @@
 Features to be tested (tested via unit testing, integration testing, and system testing):
 1-My labs  
 2-My donations 
+6-edit donations
+7-delete donations
 3-upload in chat box
 4-AI chat box
 5-regular chat box 
-6-edit donations
-7-delete donations
 8-automatic match suggestion in notifications
 9-feedback form 
 10-matches tab for doctors and patients (including all the subsequent pages that follow)

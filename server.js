@@ -1,9 +1,6 @@
-import MongoStore from 'connect-mongo';
 import 'dotenv/config';
 import express from 'express';
 import 'express-async-errors';
-import session from 'express-session';
-import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { connectDB } from './config/database.js';
@@ -23,6 +20,7 @@ import AIChatRouter from './routes/ai-chat.routes.js';
 import errorHandler from './middleware/errorHandler.js';
 
 import { protectHtmlPages } from './middleware/html-pages-middleware.js';
+import { getSessionMiddleware } from './middleware/session-middleware.js';
 const app = express();
 // Connect to MongoDB
 connectDB();
@@ -35,22 +33,7 @@ app.use(
   })
 );
 // Setup express-session with existing Mongoose connection
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || '',
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-      client: mongoose.connection.getClient(), // Use existing Mongoose connection
-      collectionName: 'sessions',
-    }),
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24, // 1 day
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-    },
-  })
-);
+app.use(getSessionMiddleware());
 
 app.use('/api/auth', AuthRouter);
 app.use('/api/diseases', DiseaseRouter);

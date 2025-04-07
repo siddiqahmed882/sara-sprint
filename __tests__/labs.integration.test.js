@@ -2,19 +2,18 @@
 import 'dotenv/config';
 import express from 'express';
 import 'express-async-errors';
-import session from 'express-session';
 import request from 'supertest';
 import mongoose from 'mongoose';
-import MongoStore from 'connect-mongo';
 
 import LabRouter from '../routes/lab.routes.js';
 import { connectDB } from '../config/database.js';
+import { getSessionMiddleware } from '../middleware/session-middleware.js';
 
 let app;
 
 const baseRoute = '/api/labs';
 const cookieHeader = [
-  'connect.sid=s%3AnqeH2HmnjvgnN1JpFb3Tf383f_67E0TK.rtSrDc56CbSqgdkM7Ic%2B7Z8jDQYnNZnVJdhzJl83DbA;',
+  'connect.sid=s%3AWRjEdPcniRj5nUxmkg4L9v9pTcP9zwIT.uX5E6zAGLv3vLHTTK4umdd4%2FLcUuGleOg13XMNSfJqs;',
 ];
 
 beforeAll(async () => {
@@ -23,22 +22,7 @@ beforeAll(async () => {
   app = express();
   app.use(express.json());
 
-  app.use(
-    session({
-      secret: process.env.SESSION_SECRET || 'test_secret',
-      resave: false,
-      saveUninitialized: false,
-      store: MongoStore.create({
-        client: mongoose.connection.getClient(),
-        collectionName: 'sessions',
-      }),
-      cookie: {
-        maxAge: 1000 * 60 * 60 * 24,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-      },
-    })
-  );
+  app.use(getSessionMiddleware());
 
   app.use(baseRoute, LabRouter);
 });

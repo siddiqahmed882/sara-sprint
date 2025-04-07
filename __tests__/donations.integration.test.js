@@ -2,20 +2,18 @@
 import 'dotenv/config';
 import express from 'express';
 import 'express-async-errors';
-import session from 'express-session';
 import request from 'supertest';
 import mongoose from 'mongoose';
-import MongoStore from 'connect-mongo';
 
 import DonationRouter from '../routes/donation.routes.js';
 import { connectDB } from '../config/database.js';
+import { getSessionMiddleware } from '../middleware/session-middleware.js';
 
 let app;
+let donationId;
 
 const baseRoute = '/api/donations';
-const cookieHeader = [
-  'connect.sid=s%3AnqeH2HmnjvgnN1JpFb3Tf383f_67E0TK.rtSrDc56CbSqgdkM7Ic%2B7Z8jDQYnNZnVJdhzJl83DbA;',
-];
+const cookieHeader = ['connect.sid=s%3AeThje9B40c7JeKJc02fi1G_lXVMO3cwT.q1dUdgTkhLl2iEvtNMxEd07vryKzZJFAZTeN1tAgwgw;'];
 
 beforeAll(async () => {
   await connectDB();
@@ -23,22 +21,7 @@ beforeAll(async () => {
   app = express();
   app.use(express.json());
 
-  app.use(
-    session({
-      secret: process.env.SESSION_SECRET || 'test_secret',
-      resave: false,
-      saveUninitialized: false,
-      store: MongoStore.create({
-        client: mongoose.connection.getClient(),
-        collectionName: 'sessions',
-      }),
-      cookie: {
-        maxAge: 1000 * 60 * 60 * 24,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-      },
-    })
-  );
+  app.use(getSessionMiddleware());
 
   app.use(baseRoute, DonationRouter);
 });
@@ -49,7 +32,7 @@ afterAll(async () => {
 
 describe('Integration tests for the donations API', () => {
   it('GET /api/donations - should return all donations', async () => {
-    const res = await request(app).get(baseRoute).set('Cookie', cookieHeader);
+    const res = await request(app).get(`${baseRoute}/?type=by-me`).set('Cookie', cookieHeader);
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual(
@@ -90,11 +73,12 @@ describe('Integration tests for the donations API', () => {
         defects: 'None',
         pointOfContact: 'John Doe',
         details: 'Available for immediate pickup',
-        userId: '67d558aa89f0026ff98fb588',
       };
 
       const res = await postDonation(postData);
       expect(res.statusCode).toBe(201);
+
+      donationId = res.body.data._id;
     });
 
     it('should fail with missing required fields', async () => {
@@ -116,50 +100,38 @@ describe('Integration tests for the donations API', () => {
         })
       );
     });
+  });
 
-    it('should fail with invalid userId', async () => {
-      const postData = {
-        equipmentType: 'Medical',
-        equipmentName: 'X-Ray Machine',
-        equipmentDescription: 'A high-quality X-Ray machine.',
-        yearsOfUse: 5,
-        warrantyDetails: '2 years remaining',
-        defects: 'None',
-        pointOfContact: 'John Doe',
-        details: 'Available for immediate pickup',
-        userId: 'invalid-user-id',
-      };
+  describe('PUT /api/donations/:donationId', () => {
+    const postData = {
+      equipmentType: 'Medical',
+      equipmentName: 'X-Ray Machine',
+      equipmentDescription: 'A high-quality X-Ray machine.',
+      yearsOfUse: 3,
+      warrantyDetails: '2 years remaining',
+      defects: 'None',
+      pointOfContact: 'John Doe',
+      details: 'Available for immediate pickup',
+    };
 
-      const res = await postDonation(postData);
-      expect(res.statusCode).toBe(400);
+    it('should update an existing donation with valid data', async () => {
+      const res = await request(app).put(`${baseRoute}/${donationId}`).set('Cookie', cookieHeader).send(postData);
+      expect(res.statusCode).toBe(200);
       expect(res.body).toEqual(
         expect.objectContaining({
           message: expect.any(String),
-          error: expect.objectContaining({
-            userId: expect.any(String),
-          }),
         })
       );
     });
+  });
 
-    it('should fail when userId does not exist', async () => {
-      const postData = {
-        equipmentType: 'Medical',
-        equipmentName: 'X-Ray Machine',
-        equipmentDescription: 'A high-quality X-Ray machine.',
-        yearsOfUse: 5,
-        warrantyDetails: '2 years remaining',
-        defects: 'None',
-        pointOfContact: 'John Doe',
-        details: 'Available for immediate pickup',
-        userId: '67d77b6bdf1591dfb78c7857',
-      };
-
-      const res = await postDonation(postData);
-      expect(res.statusCode).toBe(404);
+  describe('DELETE /api/donations/:donationId', () => {
+    it('should delete an existing donation', async () => {
+      const res = await request(app).delete(`${baseRoute}/${donationId}`).set('Cookie', cookieHeader);
+      expect(res.statusCode).toBe(200);
       expect(res.body).toEqual(
         expect.objectContaining({
-          message: expect.any(String),
+          message: 'Donation deleted successfully',
         })
       );
     });
