@@ -29,6 +29,7 @@ function createContactElement(contact) {
   const contactElement = document.createElement('div');
   contactElement.classList.add('user');
   contactElement.dataset.matchId = contact.matchId;
+  contactElement.id = contact.matchId;
 
   contactElement.innerHTML = `
     <span class="user-name">${contact.name}</span>

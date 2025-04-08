@@ -5,9 +5,9 @@ import 'express-async-errors';
 import request from 'supertest';
 import mongoose from 'mongoose';
 
-import DonationRouter from '../routes/donation.routes.js';
-import { connectDB } from '../config/database.js';
-import { getSessionMiddleware } from '../middleware/session-middleware.js';
+import DonationRouter from '../../routes/donation.routes.js';
+import { connectDB } from '../../config/database.js';
+import { getSessionMiddleware } from '../../middleware/session-middleware.js';
 
 let app;
 let donationId;

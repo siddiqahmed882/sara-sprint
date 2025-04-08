@@ -5,9 +5,9 @@ import 'express-async-errors';
 import request from 'supertest';
 import mongoose from 'mongoose';
 
-import LabRouter from '../routes/lab.routes.js';
-import { connectDB } from '../config/database.js';
-import { getSessionMiddleware } from '../middleware/session-middleware.js';
+import LabRouter from '../../routes/lab.routes.js';
+import { connectDB } from '../../config/database.js';
+import { getSessionMiddleware } from '../../middleware/session-middleware.js';
 
 let app;
 
