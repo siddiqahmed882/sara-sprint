@@ -1,4 +1,3 @@
-// test/labs.test.js
 import 'dotenv/config';
 import express from 'express';
 import 'express-async-errors';
@@ -6,14 +5,22 @@ import request from 'supertest';
 import mongoose from 'mongoose';
 
 import DonationRouter from '../../routes/donation.routes.js';
+import AuthRouter from '../../routes/auth.routes.js';
 import { connectDB } from '../../config/database.js';
 import { getSessionMiddleware } from '../../middleware/session-middleware.js';
 
 let app;
 let donationId;
+let cookieHeader;
 
 const baseRoute = '/api/donations';
-const cookieHeader = ['connect.sid=s%3AeThje9B40c7JeKJc02fi1G_lXVMO3cwT.q1dUdgTkhLl2iEvtNMxEd07vryKzZJFAZTeN1tAgwgw;'];
+const authRoute = '/api/auth';
+
+const TEST_DONOR = {
+  email: 'test-donor@gmail.com',
+  otp: '124124',
+  userType: 'donorAcquirer',
+};
 
 beforeAll(async () => {
   await connectDB();
@@ -23,7 +30,16 @@ beforeAll(async () => {
 
   app.use(getSessionMiddleware());
 
+  app.use(authRoute, AuthRouter);
   app.use(baseRoute, DonationRouter);
+
+  // login as a test user to get the session cookie
+  const res = await request(app).post(`${authRoute}/verify-otp`).send(TEST_DONOR);
+  expect(res.statusCode).toBe(200);
+
+  // Store cookie for future authenticated requests
+  const cookies = res.headers['set-cookie'];
+  cookieHeader = cookies.map((cookie) => cookie.split(';')[0]);
 });
 
 afterAll(async () => {

@@ -1,5 +1,5 @@
 Features to be tested (tested via unit testing, integration testing, and system testing):
-1-My labs  
+1-My labs
 2-My donations 
 6-edit donations
 7-delete donations

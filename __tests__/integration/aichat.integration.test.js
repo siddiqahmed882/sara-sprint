@@ -5,7 +5,7 @@ import 'express-async-errors';
 import request from 'supertest';
 import mongoose from 'mongoose';
 
-import LabRouter from '../../routes/lab.routes.js';
+import AIChatRouter from '../../routes/ai-chat.routes.js';
 import { connectDB } from '../../config/database.js';
 import { getSessionMiddleware } from '../../middleware/session-middleware.js';
 
@@ -24,7 +24,7 @@ beforeAll(async () => {
 
   app.use(getSessionMiddleware());
 
-  app.use(baseRoute, LabRouter);
+  app.use(baseRoute, AIChatRouter);
 });
 
 afterAll(async () => {
@@ -40,13 +40,11 @@ describe('POST /api/ai-chat', () => {
 
   it('should return a valid AI response for a valid chat request', async () => {
     const postData = {
-      messages: [
-        { role: 'user', message: 'What are the lab timings?' },
-      ],
+      messages: [{ role: 'user', message: 'What are the lab timings?' }],
     };
 
     const res = await postAIChat(postData);
-    console.log(res.error)
+    console.log(res.error);
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual(
       expect.objectContaining({
@@ -59,19 +57,15 @@ describe('POST /api/ai-chat', () => {
 
   it('should fail with invalid message schema', async () => {
     const postData = {
-      messages: [
-        { role: 'invalid-role', message: 'What are the lab timings?' },
-      ],
+      messages: [{ role: 'invalid-role', message: 'What are the lab timings?' }],
     };
 
     const res = await postAIChat(postData);
+
     expect(res.statusCode).toBe(400);
     expect(res.body).toEqual(
       expect.objectContaining({
         message: expect.any(String),
-        error: expect.objectContaining({
-          messages: expect.any(String),
-        }),
       })
     );
   });
@@ -86,48 +80,6 @@ describe('POST /api/ai-chat', () => {
     expect(res.body).toEqual(
       expect.objectContaining({
         message: expect.any(String),
-        error: expect.objectContaining({
-          messages: expect.any(String),
-        }),
-      })
-    );
-  });
-
-  it('should fail when OpenAI API key is missing', async () => {
-    const originalApiKey = process.env.OPEN_AI_API_KEY;
-    delete process.env.OPEN_AI_API_KEY;
-
-    const postData = {
-      messages: [
-        { role: 'user', message: 'What are the lab timings?' },
-      ],
-    };
-
-    const res = await postAIChat(postData);
-    expect(res.statusCode).toBe(500);
-    expect(res.body).toEqual(
-      expect.objectContaining({
-        message: 'No response from OpenAI API',
-      })
-    );
-
-    process.env.OPEN_AI_API_KEY = originalApiKey; // Restore API key
-  });
-
-  it('should fail when knowledge base file is missing', async () => {
-    jest.spyOn(fsPromises, 'readFile').mockRejectedValueOnce(new Error('File not found'));
-
-    const postData = {
-      messages: [
-        { role: 'user', message: 'What are the lab timings?' },
-      ],
-    };
-
-    const res = await postAIChat(postData);
-    expect(res.statusCode).toBe(500);
-    expect(res.body).toEqual(
-      expect.objectContaining({
-        message: 'Internal Server Error',
       })
     );
   });

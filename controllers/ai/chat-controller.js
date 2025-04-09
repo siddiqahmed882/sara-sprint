@@ -8,12 +8,14 @@ import { getAbsolutePath } from '../../lib/utils.js';
 const OPEN_AI_API_KEY = process.env.OPEN_AI_API_KEY;
 
 const requestSchema = z.object({
-  messages: z.array(
-    z.object({
-      role: z.enum(['user', 'assistant']),
-      message: z.string(),
-    })
-  ),
+  messages: z
+    .array(
+      z.object({
+        role: z.enum(['user', 'assistant']),
+        message: z.string(),
+      })
+    )
+    .min(1, 'Messages array must contain at least one message'),
 });
 
 const knowledgeBasePath = getAbsolutePath(['chatbot-knowledgebase.txt']);

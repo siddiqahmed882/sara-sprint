@@ -5,16 +5,22 @@ import 'express-async-errors';
 import request from 'supertest';
 import mongoose from 'mongoose';
 
-import LabRouter from '../routes/lab.routes.js';
-import { connectDB } from '../config/database.js';
-import { getSessionMiddleware } from '../middleware/session-middleware.js';
+import LabRouter from '../../routes/lab.routes.js';
+import AuthRouter from '../../routes/auth.routes.js';
+import { connectDB } from '../../config/database.js';
+import { getSessionMiddleware } from '../../middleware/session-middleware.js';
 
 let app;
 
 const baseRoute = '/api/labs';
-const cookieHeader = [
-  'connect.sid=s%3AWRjEdPcniRj5nUxmkg4L9v9pTcP9zwIT.uX5E6zAGLv3vLHTTK4umdd4%2FLcUuGleOg13XMNSfJqs;',
-];
+const authRoute = '/api/auth';
+let cookieHeader;
+
+const TEST_DOCTOR = {
+  email: 'test-doctor@gmail.com',
+  otp: '124124',
+  userType: 'doctor',
+};
 
 beforeAll(async () => {
   await connectDB();
@@ -24,7 +30,16 @@ beforeAll(async () => {
 
   app.use(getSessionMiddleware());
 
+  app.use(authRoute, AuthRouter);
   app.use(baseRoute, LabRouter);
+
+  // login as a test user to get the session cookie
+  const res = await request(app).post(`${authRoute}/verify-otp`).send(TEST_DOCTOR);
+  expect(res.statusCode).toBe(200);
+
+  // Store cookie for future authenticated requests
+  const cookies = res.headers['set-cookie'];
+  cookieHeader = cookies.map((cookie) => cookie.split(';')[0]);
 });
 
 afterAll(async () => {
