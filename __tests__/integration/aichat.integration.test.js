@@ -44,7 +44,6 @@ describe('POST /api/ai-chat', () => {
     };
 
     const res = await postAIChat(postData);
-    console.log(res.error);
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual(
       expect.objectContaining({
@@ -83,4 +82,45 @@ describe('POST /api/ai-chat', () => {
       })
     );
   });
+
+  it('should fail when no messages field is provided', async () => {
+    const postData = {};
+
+    const res = await postAIChat(postData);
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual(
+      expect.objectContaining({
+        message: expect.any(String),
+      })
+    );
+  });
+
+  it('should fail when message content is missing', async () => {
+    const postData = {
+      messages: [{ role: 'user' }],
+    };
+
+    const res = await postAIChat(postData);
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual(
+      expect.objectContaining({
+        message: expect.any(String),
+      })
+    );
+  });
+
+  it('should fail when role is missing in the message', async () => {
+    const postData = {
+      messages: [{ message: 'What are the lab timings?' }],
+    };
+
+    const res = await postAIChat(postData);
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual(
+      expect.objectContaining({
+        message: expect.any(String),
+      })
+    );
+  });
 });
+
