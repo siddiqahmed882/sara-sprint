@@ -1,6 +1,7 @@
-10-matches tab for doctors and patients (including all the subsequent pages that follow)
 12-clinical trials tab (including all the subsequent pages that follow such as: "Are you sure you want to match to ... trial?")
 11-patients tab (including all the subsequent pages that follow)
+
+10-matches tab for doctors and patients (including all the subsequent pages that follow)
 16-filter system
 15-edit profile tab (including all the subsequent pages that follow)(donor and patient)
 
