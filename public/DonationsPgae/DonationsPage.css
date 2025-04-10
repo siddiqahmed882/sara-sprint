@@ -50,6 +50,10 @@ body {
   width: 100%;
   max-width: 1400px;
   margin-inline: auto;
+
+  &.hidden {
+    display: none;
+  }
 }
 
 .card {

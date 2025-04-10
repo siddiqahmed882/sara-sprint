@@ -3,7 +3,7 @@ import puppeteer from 'puppeteer';
 (async () => {
   const browser = await puppeteer.launch({
     headless: false,
-    slowMo: 70,
+    slowMo: 5,
   });
 
   const page = await browser.newPage();
@@ -44,7 +44,6 @@ import puppeteer from 'puppeteer';
   await page.waitForSelector(matchesButton);
   await page.click(matchesButton);
 
-  
   const inquireButton = 'a[href="../matchespage/PcontactDr.html?doctorId=67e5a689d45a65cec9375a03"]';
   await page.waitForSelector(inquireButton);
   await page.click(inquireButton);
@@ -53,7 +52,6 @@ import puppeteer from 'puppeteer';
   await page.waitForSelector(privateInfo);
   await page.click(privateInfo);
 
-  
   const backButton = 'a[href="../MatchesPage/PatientMatchesPage.html"]';
   await page.waitForSelector(backButton);
   await page.click(backButton);
@@ -62,11 +60,10 @@ import puppeteer from 'puppeteer';
   await page.waitForSelector(otherPageButton);
   await page.click(otherPageButton);
 
-  
   const matchButton = 'a[href="patientconfirmmatch.html?doctorId=67e5a689d45a65cec9375a03"]';
   await page.waitForSelector(matchButton);
   await page.click(matchButton);
-  
+
   const noButton = 'a[href="CTpage.html"]';
   await page.waitForSelector(noButton);
   await page.click(noButton);

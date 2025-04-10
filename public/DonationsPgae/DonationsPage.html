@@ -67,7 +67,7 @@
           </select>
         </div>
 
-        <div class="container" id="donations-container">
+        <div class="container hidden" id="donations-container">
           <!-- Donations will be added here -->
         </div>
         <script>
@@ -205,6 +205,7 @@
         noDonations.style.gridColumn = '1 / -1';
         noDonations.style.textAlign = 'center';
         container.appendChild(noDonations);
+        container.classList.remove('hidden');
         return;
       }
 
@@ -233,6 +234,8 @@
 
         container.appendChild(card);
       });
+
+      container.classList.remove('hidden');
     }
 
     const createDetailElement = (label, value) => {
