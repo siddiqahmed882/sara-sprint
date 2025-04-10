@@ -3,7 +3,7 @@ import { findDoctorsToNotifyAboutPatient } from '../../../controllers/signup/sig
 describe('findDoctorsToNotifyAboutPatient', () => {
   const doctors = [
     { name: 'Dr. Smith', specialization: 'Cardiology' },
-    { name: 'Dr. Jones', specialization: 'Pulmonology' },
+    { name: 'Dr. Jones', specialization: 'Pulmonary' },
     { name: 'Dr. Lee', specialization: 'Endocrinology' },
     { name: 'Dr. Adams', specialization: 'Cardiovascular Medicine' },
   ];

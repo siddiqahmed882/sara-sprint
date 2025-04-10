@@ -1,5 +1,3 @@
-// __tests__/unit/updateDonation.unit.test.js
-
 import { jest } from '@jest/globals';
 import { ApiSuccessResponse } from '../../../lib/api-response.js';
 import { ZodError } from 'zod';
