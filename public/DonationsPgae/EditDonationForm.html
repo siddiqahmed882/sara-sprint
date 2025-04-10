@@ -37,7 +37,7 @@
     <div class="container">
       <a href="DonationsPage.html" class="back">← Back</a>
       <h1>Edit Donation Form</h1>
-      <form id="equipmentForm">
+      <form id="equipmentForm" hidden>
         <label for="equipmentName">Equipment Name</label>
         <select id="equipmentName" name="equipmentName" required>
           <option value="" disabled selected>Select Equipment</option>
@@ -170,6 +170,9 @@
           populateForm(donation);
           // Add submit handler
           form.addEventListener('submit', (event) => handleSubmit(event, donationId));
+
+          // Show the form
+          form.removeAttribute('hidden');
         }
 
         async function populateForm(donation) {

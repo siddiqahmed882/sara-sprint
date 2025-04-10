@@ -25,17 +25,33 @@ import { donorLogin } from './_donor-login.js';
   }
 
   const donationRow = await donationsTable.$('.donation-row');
-  if (donationRow) {
-    console.log('Donation row found!');
-  } else {
-    const emptyRow = await donationsTable.$('.empty-row');
-    if (emptyRow) {
-      console.log('Empty row found!');
-    } else {
-      console.error('No donation rows or empty rows found!');
-    }
+  if (!donationRow) {
+    console.log('No donation row found!');
+    await browser.close();
+    return;
   }
 
-  // done with automation
+  const deleteButton = await donationRow.$('.action-btn.delete-btn');
+  if (!deleteButton) {
+    console.error('Delete button not found!');
+    await browser.close();
+    return;
+  }
+
+  await deleteButton.click();
+
+  //confirm-btn
+  const confirmDeleteBtn = await page.waitForSelector('.confirm-btn', { visible: true });
+  if (!confirmDeleteBtn) {
+    console.error('Confirm delete button not found!');
+    await browser.close();
+    return;
+  }
+
+  await confirmDeleteBtn.click();
+
+  console.log('Donation deleted successfully!');
+
+  // Close the browser
   await browser.close();
 })();

@@ -8,23 +8,32 @@ async function init() {
     alert(fetchResponse.error);
     return;
   }
+
   const labs = fetchResponse.data;
+  const labsTableBody = document.getElementById('labs-table-body');
 
   if (labs.length === 0) {
-    document.getElementById('labs-table-body').innerHTML = "<tr><td colspan='5'>No labs found.</td></tr>";
+    labsTableBody.innerHTML = "<tr class='empty-row'><td colspan='5'>No labs found.</td></tr>";
+    labsTableBody.removeAttribute('hidden');
     return;
   }
 
-  const labsTableBody = document.getElementById('labs-table-body');
-  labs.forEach((lab) => {
+  for (const lab of labs) {
+    if (!lab.patient) {
+      continue;
+    }
     const row = document.createElement('tr');
+    row.className = 'lab-row';
     row.innerHTML = `
-      <td>${lab.patient.name}</td>
+      <td>${lab.patient ? lab.patient.name : 'N/A'}</td>
       <td>${lab.labName}</td>
       <td>${new Date(lab.bookingDateTime).toLocaleDateString()}</td>
       <td>${new Date(lab.bookingDateTime).toLocaleTimeString()}</td>
       <td>${lab.testType}</td>
     `;
     labsTableBody.appendChild(row);
-  });
+  }
+
+  console.log('Labs:', labs);
+  labsTableBody.removeAttribute('hidden');
 }

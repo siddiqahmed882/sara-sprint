@@ -1,4 +1,3 @@
-// test/labs.test.js
 import 'dotenv/config';
 import express from 'express';
 import 'express-async-errors';
@@ -12,9 +11,6 @@ import { getSessionMiddleware } from '../../middleware/session-middleware.js';
 let app;
 
 const baseRoute = '/api/ai-chat';
-const cookieHeader = [
-  'connect.sid=s%3AWRjEdPcniRj5nUxmkg4L9v9pTcP9zwIT.uX5E6zAGLv3vLHTTK4umdd4%2FLcUuGleOg13XMNSfJqs;',
-];
 
 beforeAll(async () => {
   await connectDB();
@@ -35,7 +31,7 @@ describe('POST /api/ai-chat', () => {
   const endpoint = `${baseRoute}/`;
 
   const postAIChat = async (data) => {
-    return await request(app).post(endpoint).set('Cookie', cookieHeader).send(data);
+    return await request(app).post(endpoint).send(data);
   };
 
   it('should return a valid AI response for a valid chat request', async () => {
@@ -123,4 +119,3 @@ describe('POST /api/ai-chat', () => {
     );
   });
 });
-

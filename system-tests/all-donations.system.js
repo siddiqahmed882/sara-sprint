@@ -4,7 +4,7 @@ import { donorLogin } from './_donor-login.js';
 (async () => {
   const browser = await puppeteer.launch({
     headless: false,
-    slowMo: 5,
+    slowMo: 0,
   });
 
   const page = await browser.newPage();

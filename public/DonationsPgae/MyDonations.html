@@ -56,7 +56,7 @@
             </tr>
           </thead>
 
-          <tbody id="donations-table-body">
+          <tbody id="donations-table-body" hidden>
             <!-- Donations will be injected here by JavaScript -->
           </tbody>
         </table>
@@ -84,13 +84,14 @@
       const donationsTableBody = document.getElementById('donations-table-body');
 
       if (donations.length === 0) {
-        donationsTableBody.innerHTML = "<tr><td colspan='10'>No donations found.</td></tr>";
+        donationsTableBody.innerHTML = "<tr class='empty-row'><td colspan='10'>No donations found.</td></tr>";
+        donationsTableBody.removeAttribute('hidden');
         return;
       }
 
       donations.forEach((donation) => {
         const row = document.createElement('tr');
-
+        row.classList.add('donation-row');
         row.innerHTML = `
           <td>${donation.equipmentName}</td>
           <td>${donation.equipmentDescription}</td>
@@ -114,6 +115,7 @@
 
         donationsTableBody.appendChild(row);
       });
+      donationsTableBody.removeAttribute('hidden');
     }
   </script>
 </html>
