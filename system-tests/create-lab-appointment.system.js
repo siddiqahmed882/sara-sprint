@@ -25,6 +25,12 @@ import { doctorLogin } from './_doctor-login.js';
   const confirmBtnSelector = 'button[id="confirm-btn"]';
   const successContainerSelector = '.success-container';
 
+  async function selectOptionAtRandom(selector) {
+    const options = await page.$$eval(`${selector} option:not(:first-child)`, (opts) => opts.map((opt) => opt.value));
+    const randomOption = options[Math.floor(Math.random() * options.length)];
+    await page.select(selector, randomOption);
+  }
+
   // select a lab from the labBtns at random
   const labBtns = await page.$$(labBtnsSelector);
   const randomLabIndex = Math.floor(Math.random() * labBtns.length);
@@ -43,26 +49,14 @@ import { doctorLogin } from './_doctor-login.js';
   await page.keyboard.type('01/01/2026'); // Change this to the desired date
 
   // select a time
-  const options = await page.$$eval(`${appointmentTimeSelector} option:not(:first-child)`, (opts) =>
-    opts.map((opt) => opt.value)
-  );
-  const randomTime = options[Math.floor(Math.random() * options.length)];
-  await page.select(appointmentTimeSelector, randomTime);
+  await selectOptionAtRandom(appointmentTimeSelector);
 
   // select a patient name
   await page.waitForSelector(patientNameSelectInputSelector, { visible: true });
-  const patientNameOptions = await page.$$eval(`${patientNameSelectInputSelector} option:not(:first-child)`, (opts) =>
-    opts.map((opt) => opt.value)
-  );
-  const randomPatientName = patientNameOptions[Math.floor(Math.random() * patientNameOptions.length)];
-  await page.select(patientNameSelectInputSelector, randomPatientName);
+  await selectOptionAtRandom(patientNameSelectInputSelector);
 
   // select a bloodwork type
-  const bloodWorkOptions = await page.$$eval(`${bloodWorkSelectInputSelector} option:not(:first-child)`, (opts) =>
-    opts.map((opt) => opt.value)
-  );
-  const randomBloodWork = bloodWorkOptions[Math.floor(Math.random() * bloodWorkOptions.length)];
-  await page.select(bloodWorkSelectInputSelector, randomBloodWork);
+  await selectOptionAtRandom(bloodWorkSelectInputSelector);
 
   // click the confirm button
   await page.waitForSelector(confirmBtnSelector);
