@@ -1,15 +1,9 @@
-import puppeteer from 'puppeteer';
-
-(async () => {
-  const browser = await puppeteer.launch({
-    headless: false,
-    slowMo: 5,
-  });
-
-  const page = await browser.newPage();
-
-  // goto the new page
-
+/**
+ * @description This function automates the login process for a doctor on the web application.
+ * It uses Puppeteer to navigate to the login page, fill in the email and password fields,
+ * @param {import('puppeteer').Page} page
+ */
+export async function doctorLogin(page) {
   await page.goto('http://localhost:5000/Login-OTP/Dr-Login.html');
 
   // LOGIN PAGE
@@ -36,13 +30,4 @@ import puppeteer from 'puppeteer';
   await page.type(otp, '124124');
 
   await page.keyboard.press('Enter');
-
-  // FEEDBACK PAGE
-  // variables
-  // Click the Matches button
-  const matchesButton = 'a[href="../MatchesPage/DrMatches.html"]';
-  await page.waitForSelector(matchesButton);
-  await page.click(matchesButton);
-
-  console.log('done with automation');
-})();
+}

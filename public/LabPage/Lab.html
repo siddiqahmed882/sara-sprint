@@ -76,7 +76,7 @@
         <input type="email" id="doctor-email" placeholder="Doctor's email" readonly />
 
         <label for="patient-name">Select patient:</label>
-        <select id="patient-name" required>
+        <select id="patient-name" required hidden>
           <option value="" disabled selected>Select a patient</option>
           <!-- Patient options will be populated dynamically -->
         </select>
@@ -266,6 +266,7 @@
         button.addEventListener('click', function (e) {
           labNameField.value = button.dataset.lab;
           const currentBtn = e.currentTarget;
+          console.log(currentBtn.dataset.lab);
 
           labButtons.forEach((btn) => btn.classList.remove('active'));
           currentBtn.classList.add('active');
@@ -343,6 +344,8 @@
         option.textContent = patient.name;
         patientsSelect.appendChild(option);
       });
+
+      patientsSelect.removeAttribute('hidden');
     }
   </script>
 </html>

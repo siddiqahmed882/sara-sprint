@@ -3,7 +3,7 @@ import puppeteer from 'puppeteer';
 (async () => {
   const browser = await puppeteer.launch({
     headless: false,
-    slowMo: 70,
+    slowMo: 5,
   });
 
   const page = await browser.newPage();
@@ -37,7 +37,6 @@ import puppeteer from 'puppeteer';
 
   await page.keyboard.press('Enter');
 
-  
   // Click the Edit button
   const editButton = 'a[href="../EditProfile/EditProfile-Patient.html"]';
   await page.waitForSelector(editButton);

@@ -3,7 +3,7 @@ import puppeteer from 'puppeteer';
 (async () => {
   const browser = await puppeteer.launch({
     headless: false,
-    slowMo: 70,
+    slowMo: 5,
   });
 
   const page = await browser.newPage();
@@ -37,18 +37,15 @@ import puppeteer from 'puppeteer';
 
   await page.keyboard.press('Enter');
 
-  
-  // Click the Edit button
-  // const editButton = 'a[href="../EditProfile/EditProfile-Donor.html"]';
-  const editButton = 'button[id="edit-btn"]';
+  const editButton = 'button#edit-btn';
   await page.waitForSelector(editButton);
-  await page.click(editButton);
+  await page.evaluate((btn) => btn?.click(), await page.$(editButton));
 
   // FEEDBACK PAGE
   // variables
-  const editPassword = 'input[name="password"]';
-  const confirmPassword = 'input[name="confirmPassword"]';
-  const editName = 'input[name="name"]';
+  const editPassword = 'input[id="password"]';
+  const confirmPassword = 'input[id="confirm-password"]';
+  const editName = 'input[id="full-name"]';
 
   await page.waitForSelector(editPassword);
   await page.click(editPassword, { clickCount: 1 });
@@ -60,7 +57,11 @@ import puppeteer from 'puppeteer';
 
   await page.waitForSelector(editName);
   await page.click(editName, { clickCount: 1 });
-  await page.type(editName, 'Donor 01 Edited');
+  await page.evaluate((input) => {
+    if (input) {
+      input.value = 'Donor Edit Test';
+    }
+  }, await page.$(editName));
 
   // Click the submit button
   const submitButton = 'button[type="submit"]';
