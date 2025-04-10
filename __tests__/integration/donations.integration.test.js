@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import express from 'express';
 import 'express-async-errors';
 import request from 'supertest';
@@ -133,31 +132,31 @@ describe('Integration tests for the donations API', () => {
       const res = await request(app).put(`${baseRoute}/${donationId}`).set('Cookie', cookieHeader).send(postData);
       expect(res.statusCode).toBe(200);
       expect(res.body).toEqual(
-      expect.objectContaining({
-        message: expect.any(String),
-      })
+        expect.objectContaining({
+          message: expect.any(String),
+        })
       );
     });
 
     it('should fail to update a donation with invalid data', async () => {
       const invalidData = {
-      equipmentType: '',
-      equipmentName: '',
-      equipmentDescription: '',
-      yearsOfUse: -1,
-      warrantyDetails: '',
-      defects: '',
-      pointOfContact: '',
-      details: '',
+        equipmentType: '',
+        equipmentName: '',
+        equipmentDescription: '',
+        yearsOfUse: -1,
+        warrantyDetails: '',
+        defects: '',
+        pointOfContact: '',
+        details: '',
       };
 
       const res = await request(app).put(`${baseRoute}/${donationId}`).set('Cookie', cookieHeader).send(invalidData);
       expect(res.statusCode).toBe(400);
       expect(res.body).toEqual(
-      expect.objectContaining({
-        message: expect.any(String),
-        error: expect.any(Object),
-      })
+        expect.objectContaining({
+          message: expect.any(String),
+          error: expect.any(Object),
+        })
       );
     });
   });

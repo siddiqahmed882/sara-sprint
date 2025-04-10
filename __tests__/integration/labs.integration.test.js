@@ -1,5 +1,3 @@
-// test/labs.test.js
-import 'dotenv/config';
 import express from 'express';
 import 'express-async-errors';
 import request from 'supertest';

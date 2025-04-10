@@ -189,7 +189,7 @@ async function handleDonorAcquirerCreate(data) {
  * @param {{userId: string, patientData: PatientData}} data
  * @returns {Promise<void>}
  */
-export async function postPatientRegisteration({ userId, patientData }) {
+async function postPatientRegisteration({ userId, patientData }) {
   try {
     const doctorUsers = await UserModel.find({ userType: 'doctor' });
 
@@ -217,18 +217,7 @@ export async function postPatientRegisteration({ userId, patientData }) {
       })
     );
 
-    const diseaseNameNormalized = disease.name.toLowerCase();
-    const diseaseTypeNormalized = disease.type.toLowerCase();
-
-    const matchedDoctors = doctorProfiles.filter((doctor) => {
-      const doctorSpecializationNormalized = doctor.specialization.toLowerCase();
-      return (
-        doctorSpecializationNormalized.includes(diseaseNameNormalized) ||
-        doctorSpecializationNormalized.includes(diseaseTypeNormalized) ||
-        diseaseNameNormalized.includes(doctorSpecializationNormalized) ||
-        diseaseTypeNormalized.includes(doctorSpecializationNormalized)
-      );
-    });
+    const matchedDoctors = findDoctorsToNotifyAboutPatient(disease, doctorProfiles);
 
     // send notification to doctors for matched patient
     const meaningfulMessage = `New potential trial match: Patient ${patientData.userDetails.name} with ${disease.name} (${disease.type}). Medical History: ${patientData.medicalHistory.medicalHistory}. Medicinal History: ${patientData.medicalHistory.medicinalHistory}`;
@@ -261,7 +250,7 @@ export async function postPatientRegisteration({ userId, patientData }) {
  * @param {{userId: string, doctorData: DoctorData}} data
  * @returns {Promise<void>}
  */
-export async function postDoctorRegisteration({ userId, doctorData }) {
+async function postDoctorRegisteration({ userId, doctorData }) {
   try {
     const patientUsers = await UserModel.find({ userType: 'patient' });
 
@@ -290,18 +279,7 @@ export async function postDoctorRegisteration({ userId, doctorData }) {
       })
     );
 
-    const specializationNormalized = doctorData.doctorDetails.specialization.toLowerCase();
-
-    const matchedPatients = patientProfiles.filter((patient) => {
-      const diseaseNameNormalized = patient.diseaseName.toLowerCase();
-      const diseaseTypeNormalized = patient.diseaseType.toLowerCase();
-      return (
-        specializationNormalized.includes(diseaseNameNormalized) ||
-        specializationNormalized.includes(diseaseTypeNormalized) ||
-        diseaseNameNormalized.includes(specializationNormalized) ||
-        diseaseTypeNormalized.includes(specializationNormalized)
-      );
-    });
+    const matchedPatients = findPatientsToNotifyDoctors(doctorData.doctorDetails.specialization, patientProfiles);
 
     // send notification to patients for matched doctor
     const meaningfulMessage = `New potential trial match: Doctor ${doctorData.userDetails.name} with specialization ${doctorData.doctorDetails.specialization}.`;
@@ -332,4 +310,44 @@ export async function postDoctorRegisteration({ userId, doctorData }) {
   } catch (error) {
     console.log('Fail post doctor registration', error);
   }
+}
+
+/**
+ * Find patients to notify doctors
+ * @param {string} specialization
+ * @param {PatientProfile[]} patientProfiles
+ */
+export function findPatientsToNotifyDoctors(specialization, patientProfiles) {
+  const specializationNormalized = specialization.toLowerCase();
+
+  return patientProfiles.filter((patient) => {
+    const diseaseNameNormalized = patient.diseaseName.toLowerCase();
+    const diseaseTypeNormalized = patient.diseaseType.toLowerCase();
+    return (
+      specializationNormalized.includes(diseaseNameNormalized) ||
+      specializationNormalized.includes(diseaseTypeNormalized) ||
+      diseaseNameNormalized.includes(specializationNormalized) ||
+      diseaseTypeNormalized.includes(specializationNormalized)
+    );
+  });
+}
+
+/**
+ * Find doctors to notify
+ * @param {{name: string, type: string}} disease
+ * @param {DoctorProfile[]} doctorProfiles
+ */
+export function findDoctorsToNotifyAboutPatient(disease, doctorProfiles) {
+  const diseaseNameNormalized = disease.name.toLowerCase();
+  const diseaseTypeNormalized = disease.type.toLowerCase();
+
+  return doctorProfiles.filter((doctor) => {
+    const doctorSpecializationNormalized = doctor.specialization.toLowerCase();
+    return (
+      doctorSpecializationNormalized.includes(diseaseNameNormalized) ||
+      doctorSpecializationNormalized.includes(diseaseTypeNormalized) ||
+      diseaseNameNormalized.includes(doctorSpecializationNormalized) ||
+      diseaseTypeNormalized.includes(doctorSpecializationNormalized)
+    );
+  });
 }
