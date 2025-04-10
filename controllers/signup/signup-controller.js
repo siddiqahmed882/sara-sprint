@@ -184,14 +184,14 @@ async function handleDonorAcquirerCreate(data) {
 
 /**
  * Handle Post Patient Registration
- * @typedef {z.infer<typeof requestSchema> & {userType: "patient"}} PatientData
+ * @typedef {{userDetails: {name: string}, medicalHistory: {diseaseId: string, medicalHistory: string, medicinalHistory: string}}} PatientData
  * @typedef {{userId: string, name: string, specialization: string}} DoctorProfile
  * @param {{userId: string, patientData: PatientData}} data
  * @returns {Promise<void>}
  */
-async function postPatientRegisteration({ userId, patientData }) {
+export async function postPatientRegisteration({ userId, patientData }) {
   try {
-    const doctorUsers = await UserModel.find({ userType: 'doctor' }).select('_id name');
+    const doctorUsers = await UserModel.find({ userType: 'doctor' });
 
     const disease = await DiseaseTypeModel.findById(patientData.medicalHistory.diseaseId);
     if (!disease) {
@@ -206,7 +206,7 @@ async function postPatientRegisteration({ userId, patientData }) {
     const doctorProfiles = [];
     await Promise.all(
       doctorUsers.map(async (doctorUser) => {
-        const doctor = await DoctorModel.findOne({ user: doctorUser._id }).select('specialization');
+        const doctor = await DoctorModel.findOne({ user: doctorUser._id });
         if (!doctor) return;
 
         doctorProfiles.push({
@@ -229,10 +229,6 @@ async function postPatientRegisteration({ userId, patientData }) {
         diseaseTypeNormalized.includes(doctorSpecializationNormalized)
       );
     });
-
-    console.log('Matched doctors:', matchedDoctors);
-    console.log(doctorProfiles);
-    console.log('Patient disease:', diseaseNameNormalized, diseaseTypeNormalized);
 
     // send notification to doctors for matched patient
     const meaningfulMessage = `New potential trial match: Patient ${patientData.userDetails.name} with ${disease.name} (${disease.type}). Medical History: ${patientData.medicalHistory.medicalHistory}. Medicinal History: ${patientData.medicalHistory.medicinalHistory}`;
@@ -260,30 +256,27 @@ async function postPatientRegisteration({ userId, patientData }) {
 
 /**
  * Handle Post Doctor Registration
- * @typedef {z.infer<typeof requestSchema> & {userType: "doctor"}} DoctorData
+ * @typedef {{userDetails: {name: string}, doctorDetails: {specialization: string}}} DoctorData
  * @typedef {{userId: string, name: string, diseaseName: string, diseaseType: string, medicalHistory: string | null | undefined, medicinalHistory: string | null | undefined}} PatientProfile
  * @param {{userId: string, doctorData: DoctorData}} data
  * @returns {Promise<void>}
  */
-async function postDoctorRegisteration({ userId, doctorData }) {
+export async function postDoctorRegisteration({ userId, doctorData }) {
   try {
-    // TODO: Implement logic to match patients with doctors based on their specialization and medical history
-    const patientUsers = await UserModel.find({ userType: 'patient' }).select('_id name');
+    const patientUsers = await UserModel.find({ userType: 'patient' });
 
     /** @type {PatientProfile[]} */
     const patientProfiles = [];
 
     await Promise.all(
       patientUsers.map(async (patientUser) => {
-        const patient = await PatientModel.findOne({ user: patientUser._id }).select('_id');
+        const patient = await PatientModel.findOne({ user: patientUser._id });
         if (!patient) return;
 
-        const medicalHistory = await PatientMedicalHistoryModel.findOne({ patient: patient._id }).select(
-          'disease medicalHistory medicinalHistory'
-        );
+        const medicalHistory = await PatientMedicalHistoryModel.findOne({ patient: patient._id });
         if (!medicalHistory) return;
 
-        const disease = await DiseaseTypeModel.findById(medicalHistory.disease).select('name type');
+        const disease = await DiseaseTypeModel.findById(medicalHistory.disease);
         if (!disease) return;
 
         patientProfiles.push({

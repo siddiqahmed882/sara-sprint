@@ -1,5 +1,3 @@
-// __tests__/unit/donation.unit.test.js
-
 import { jest } from '@jest/globals';
 import { ApiSuccessResponse } from '../../../lib/api-response.js';
 

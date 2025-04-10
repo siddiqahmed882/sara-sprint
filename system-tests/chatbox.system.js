@@ -3,7 +3,7 @@ import puppeteer from 'puppeteer';
 (async () => {
   const browser = await puppeteer.launch({
     headless: false,
-    slowMo: 70,
+    slowMo: 5,
   });
 
   const page = await browser.newPage();
@@ -37,8 +37,6 @@ import puppeteer from 'puppeteer';
 
   await page.keyboard.press('Enter');
 
-  // FEEDBACK PAGE
-  // variables
   // Click the Matches button
   const matchesButton = 'a[href="../MatchesPage/PatientMatchesPage.html"]';
   await page.waitForSelector(matchesButton);
